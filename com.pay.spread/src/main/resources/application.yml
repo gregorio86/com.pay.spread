@@ -1,0 +1,36 @@
+spring:
+  profiles:
+    active:
+    - local
+  
+  mvc:    view:      prefix: /WEB-INF/jsp
+      suffix: .jsp
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+--- ########### LOCAL Datasource & Logging
+spring:
+  profiles: local
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: spread
+logging: # ROOT레벨 전체 로깅 레벨 결정 
+  level: 
+    root: debug
+    org.springframework.boot.autoconfigure: ERROR
+    com.pay.spread.controller: info
+    com.pay.spread.service: info
+    com.pay.spread.dao: debug
+    com.pay.spread.domain: debug
+
+
+

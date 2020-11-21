@@ -1,0 +1,112 @@
+# vscode-restclient
+@protocol = http
+@host = localhost:8080
+@context = 
+@contentType = application/json
+@accept = application/json
+
+// 방번호
+@X-ROOM-ID_REAL = 1000
+@X-ROOM-ID_LIE = 1001
+
+// 사용자 ID
+@X-USER-ID = PAY_USER_RICH
+@X-USER-ID-POOR-1 = PAY_USER_POOR_1
+@X-USER-ID-POOR-2 = PAY_USER_POOR_2
+@X-USER-ID-POOR-3 = PAY_USER_POOR_3
+@X-USER-ID-POOR-4 = PAY_USER_POOR_4
+@X-USER-ID-POOR-5 = PAY_USER_POOR_5
+
+// 뿌릴 금액
+@SPREAD_AMT_TEST = 0
+@SPREAD_AMT_SMALL = 1000
+@SPREAD_AMT_BIG = 1000000
+
+// 대상 인원
+@SPREAD_USER_CNT_TEST = 0
+@SPREAD_USER_CNT_MAX = 5
+@SPREAD_USER_CNT_MID = 3
+@SPREAD_USER_CNT_MIN = 1
+
+
+### 인증 전 요청
+GET {{protocol}}://{{host}}/hello HTTP/1.1
+Content-Type: {{contentType}}
+Accept: {{accept}}
+
+### 돈 뿌리기 - 0원, 0명
+# @name spreadMoney
+PUT {{protocol}}://{{host}}/spreadMoney?spreadTargetAmt={{SPREAD_AMT_TEST}}&spreadTargetCnt={{SPREAD_USER_CNT_TEST}} HTTP/1.1
+X-USER-ID: {{X-USER-ID}}
+X-ROOM-ID: {{X-ROOM-ID_REAL}}
+Content-Type: {{contentType}}
+Accept: {{accept}}
+
+### 돈 뿌리기 - 1000원, 5명
+# @name spreadMoney
+PUT {{protocol}}://{{host}}/spreadMoney?spreadTargetAmt={{SPREAD_AMT_BIG}}&spreadTargetCnt={{SPREAD_USER_CNT_MAX}} HTTP/1.1
+X-USER-ID: {{X-USER-ID}}
+X-ROOM-ID: {{X-ROOM-ID_REAL}}
+Content-Type: {{contentType}}
+Accept: {{accept}}
+
+@jwt = Bearer {{spreadMoney.response.body.data.jwt}}
+@token = {{spreadMoney.response.body.data.token}}
+
+
+### 인증 후 요청
+GET {{protocol}}://{{host}}/hello HTTP/1.1
+X-USER-ID: {{X-USER-ID}}
+X-ROOM-ID: {{X-ROOM-ID_REAL}}
+Authorization: {{jwt}}
+Content-Type: {{contentType}}
+Accept: {{accept}}
+
+
+### 다른 방의 유저가 돈 가져가기
+# @name getRandomMoney
+GET {{protocol}}://{{host}}/getRandomMoney?token={{token}} HTTP/1.1
+X-USER-ID: {{X-USER-ID}}
+X-ROOM-ID: {{X-ROOM-ID_LIE}}
+Authorization: {{jwt}}
+Content-Type: {{contentType}}
+Accept: {{accept}}
+
+
+### 본인이 본인 돈 가져가기
+# @name getRandomMoney
+GET {{protocol}}://{{host}}/getRandomMoney?token={{token}} HTTP/1.1
+X-USER-ID: {{X-USER-ID}}
+X-ROOM-ID: {{X-ROOM-ID_REAL}}
+Authorization: {{jwt}}
+Content-Type: {{contentType}}
+Accept: {{accept}}
+
+
+### 같은방 다른 사용자가 돈 가져가기
+# @name getRandomMoney
+GET {{protocol}}://{{host}}/getRandomMoney?token={{token}} HTTP/1.1
+X-USER-ID: {{X-USER-ID-POOR-1}}
+X-ROOM-ID: {{X-ROOM-ID_REAL}}
+Authorization: {{jwt}}
+Content-Type: {{contentType}}
+Accept: {{accept}}
+
+### 같은방 다른 사용자가 돈 가져가기
+# @name getRandomMoney
+GET {{protocol}}://{{host}}/getRandomMoney?token={{token}} HTTP/1.1
+X-USER-ID: {{X-USER-ID-POOR-2}}
+X-ROOM-ID: {{X-ROOM-ID_REAL}}
+Authorization: {{jwt}}
+Content-Type: {{contentType}}
+Accept: {{accept}}
+
+
+### 가져간 내역 조회
+# @name getRandomMoneyList
+GET {{protocol}}://{{host}}/getRandomMoneyList?token={{token}} HTTP/1.1
+X-USER-ID: {{X-USER-ID}}
+X-ROOM-ID: {{X-ROOM-ID_REAL}}
+Authorization: {{jwt}}
+Content-Type: {{contentType}}
+Accept: {{accept}}
